@@ -1,0 +1,310 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <meta http-equiv="x-ua-compatible" content="IE=edge" >
+    <meta charset="utf-8">
+    <title>Basic Example</title>
+    <style type="text/css">
+    	HTML { width:100%;height:100%; }
+    	BODY { margin:0px;padding:0px;min-width:100%;min-height:100%;background-color:navy; }
+    	H1,H2,H3,H4,H5,H6 { margin:0px;padding:0px;border:0px; }
+    	* { font-family:Lucida Console,sans-serif; }
+    	BUTTON,SELECT,INPUT,TEXTAREA,OPTION,CODE { color:black; }
+
+        #pageLeftColumn {
+            position:           absolute;
+            background-color:   white;
+            padding-left:       5%;
+            padding-right:      5%;
+            color:              black;
+            font-size:          12px;
+            width:              40%;
+            height:             220px;
+            top:                0px;
+            left:               0px;
+        }
+
+        #pageRightColumn {
+            position:           absolute;
+            background-color:   silver;
+            color:              black;
+            padding-left:       5%;
+            padding-right:      5%;
+            font-size:          12px;
+            width:              40%;
+            height:             220px;
+            top:                0px;
+            right:              0px;
+        }
+
+        #pageInfo {
+            position:           absolute;
+            top:                220px;
+            left:               0px;
+            right:              0px;
+            bottom:             0px;
+            overflow:           auto;
+            background-color:   transparent;
+            color:              white;
+        }
+
+        .data-iab-container {
+            position:       relative;
+            top:            0px;
+            left:           0px;
+            vertical-align: top;
+            text-align:     left;
+            display:          inline-block;
+            width:              100%;
+            background-color:   green;
+            color:              white;
+            font-size:          16px;
+        }
+    </style>
+</head>
+<body>
+    <div id="pageLeftColumn">
+        <div id="adContainer_a" class="data-iab-container" data-iab-container="flex" data-iabc-type="flex" data-iabc-aspect="16x9" data-iabc-minw="160" data-iabc-maxh="200">
+            <div id="ad_a" style="position:relative;top:0px;left:0px;width:100%;height:100%;border:outset gold 3px;">
+                Hi I'm an ad, my outer tag is set to width/height both of 100% and the publisher page as setup up the tag
+                with an aspect ratio of 16x9.
+            </div>
+        </div>
+    </div>
+
+    <div id="pageRightColumn">
+        <div id="adContainer_b" class="data-iab-container" data-iab-container="flex" data-iabc-aspect="12x5" data-iabc-minw="300" data-iabc-maxh="200">
+            <div id="ad_b" style="position:relative;top:0px;left:0px;width:100%;height:100%;border:outset gold 3px;">
+                Hi I'm an ad, my outer tag is set to width/height both of 100% and the publisher page as setup up the tag
+                with an aspect ratio of 12x5.
+            </div>
+        </div>
+    </div>
+    <div id="pageInfo">
+       <pre>
+        IAB AD Container Meta-Data Attributes
+
+            This specification allows publishers to define meta-data attributes on ad container tags, so that ad contents can determine
+            the property.  Ad contents cannot easily understand their environment withough such information as reading style/CSS information
+            does not provied concrete info.
+
+            HTML allows for custom meta-data attributes to be placed on any HTML tag.  The HTML5 specification requires that such attribute names
+            be prefixed with "data-".
+
+            Therefore we define an overall prefix of "data-iab-" to indicate higher order IAB standards information.
+
+            We also define an overall prefix of "data-iabc-" to indicate attributes relavent to ad container rendering information ,
+            which also require the attribute "data-iab-container" to be present in the given tag (see below).
+
+
+            data-iab-container  ==> This element is an ad container that conforms to IAB specifications and provides further attributes / meta-data for how the container
+                                    is setup.  The value for the attribute determines the overall "type" of the ad container.  Further meta-data attributes about
+                                    the overall configuration of the container tag should use the prefix "data-iabc-"
+
+                                    Valid values are as follows:
+
+                                    -- "flex" indicates that the container is setup to automatically scale/resize with a change in the window or screen size.
+
+                                    -- "sf-flex" indicates a SafeFrame will be inserted between the publisher and the ad content, which will also be configured
+                                        to be flexible.
+
+                                    -- "fixed" indicates the container is a fixed size.
+
+                                    -- "sf-fixed" indicates a SafeFrame will be inserted between the publisher and the ad content, which will be of a fixed size.
+
+                                    -- Note that for both of the SafeFrame types, the ad content also has a JavaScript API that it can communicate with to determine
+                                       the SafeFrame configuration / type.
+
+            data-iabc-aspect ==> Indicates the aspect ratio to be used for a flexible container.  MUST be present if data-iabc-type="flex" is set.  Aspect ratio string values
+                                 are formatted as [width]x[height].
+
+            data-iabc-minw  ==> Indicates the minimum width (in pixels) that the ad container will size to when it's defined as flexible. Note that there is no need for a minimum
+                                height requirement since that is naturally computed by the combination of the aspect ratio and minimum width.
+
+            data-iabc-w     ==> The default/initial width (in pixels) of the container.  Normally used for fixed sizes but can also be used for flexible containers as the
+                                starting point or fallback value.
+
+            data-iabc-h     ==> The default/inital height (in pixels) of the container.  Normally used for fixed sizes but can also be used for flexible containers as the
+                                starting point or fallback value.
+
+            data-iabc-maxw  ==> Indicates the maximum width (in pixels) that the ad container will size to when it's defined as flexible, or the maximum width that a fixed
+                                container can expand to temporarily (such as in rich-media cases).
+
+            data-iabc-maxh  ==> Indicates the maximum height (in pixels) that the ad container will size to when it's defined as flexible, or the maximum height that a fixed
+                                container can expand to temporarily (such as in rich-media cases).
+
+
+            In addition, we show an example here of what happens when an ad container is flexible.  The general use-case is that publishers should mark their
+            containers with the above meta-data attributes as noted.  In turn this will translate into specific HTML and CSS settings.  In terms of making ad container
+            tags automatically flexible, the easiest way to do this is known as the "padding" technique.  The tag has a width of 100%, and then has it's padding-top CSS
+            property also set to a percentage.  The percentage value for padding-top, is calculated via the aspect ratio provied in the data-iabc-aspect attribute.
+
+            The algorithm for this is as follows:
+
+                1.) Given an aspect ratio value, formatted as [width]x[height]
+                    a.) Convert the [width] part of the string into a base 10 integer
+                    b.) Convert the [height] part of the string into a base 10 integer
+
+                2.) Divide the [height] integer by the [width] integer from step 1. (so "16x9" becomes 9 / 16 == .5625)
+
+                3.) Multiply the resultant value by 100.
+
+                4.) On the given container HTML tag do the following:
+
+                    a.) Set the CSS width to 100%;
+                    b.) Set the CSS height to auto;
+                    c.) Set the CSS padding-top to the value from step 3 plus the "%" sign. (so .5625 from step 2 becomes 56.25%).
+                    d.) Set the CSS margin-top to the inverse value from step 3 plus the "%" sign. (so .5625 from step 2 becomes 56.25%, and so the margin-top is -56.25%
+
+            HTML tags further inside the given ad-container tag that is defined by the publisher, can then simply set their overall
+            bounding box to have a CSS width and CSS height set to values of 100%, and that box will automatically resize as needed.
+
+
+            View-Source on this page to read the comments, view the markup and view some sample JavaScript code to apply the proper
+            CSS styles to make a container tag flexible.
+
+        </pre>
+    </div>
+    <script type="text/javascript">
+        /*
+            IAB AD Container Meta-Data Attributes
+
+            This specification allows publishers to define meta-data attributes on ad container tags, so that ad contents can determine
+            the property.  Ad contents cannot easily understand their environment withough such information as reading style/CSS information
+            does not provied concrete info.
+
+            HTML allows for custom meta-data attributes to be placed on any HTML tag.  The HTML5 specification requires that such attribute names
+            be prefixed with "data-".
+
+            Therefore we define an overall prefix of "data-iab-" to indicate higher order IAB standards information.
+
+            We also define an overall prefix of "data-iabc-" to indicate attributes relavent to ad container rendering information ,
+            which also require the attribute "data-iab-container" to be present in the given tag (see below).
+
+
+            data-iab-container  ==> This element is an ad container that conforms to IAB specifications and provides further attributes / meta-data for how the container
+                                    is setup.  The value for the attribute determines the overall "type" of the ad container.  Further meta-data attributes about
+                                    the overall configuration of the container tag should use the prefix "data-iabc-"
+
+                                    Valid values are as follows:
+
+                                    -- "flex" indicates that the container is setup to automatically scale/resize with a change in the window or screen size.
+
+                                    -- "sf-flex" indicates a SafeFrame will be inserted between the publisher and the ad content, which will also be configured
+                                        to be flexible.
+
+                                    -- "fixed" indicates the container is a fixed size.
+
+                                    -- "sf-fixed" indicates a SafeFrame will be inserted between the publisher and the ad content, which will be of a fixed size.
+
+                                    -- Note that for both of the SafeFrame types, the ad content also has a JavaScript API that it can communicate with to determine
+                                       the SafeFrame configuration / type.
+
+            data-iabc-aspect ==> Indicates the aspect ratio to be used for a flexible container.  MUST be present if data-iabc-type="flex" is set.  Aspect ratio string values
+                                 are formatted as [width]x[height].
+
+            data-iabc-minw  ==> Indicates the minimum width (in pixels) that the ad container will size to when it's defined as flexible. Note that there is no need for a minimum
+                                height requirement since that is naturally computed by the combination of the aspect ratio and minimum width.
+
+            data-iabc-w     ==> The default/initial width (in pixels) of the container.  Normally used for fixed sizes but can also be used for flexible containers as the
+                                starting point or fallback value.
+
+            data-iabc-h     ==> The default/inital height (in pixels) of the container.  Normally used for fixed sizes but can also be used for flexible containers as the
+                                starting point or fallback value.
+
+            data-iabc-maxw  ==> Indicates the maximum width (in pixels) that the ad container will size to when it's defined as flexible, or the maximum width that a fixed
+                                container can expand to temporarily (such as in rich-media cases).
+
+            data-iabc-maxh  ==> Indicates the maximum height (in pixels) that the ad container will size to when it's defined as flexible, or the maximum height that a fixed
+                                container can expand to temporarily (such as in rich-media cases).
+
+
+            In addition, we show an example here of what happens when an ad container is flexible.  The general use-case is that publishers should mark their
+            containers with the above meta-data attributes as noted.  In turn this will translate into specific HTML and CSS settings.  In terms of making ad container
+            tags automatically flexible, the easiest way to do this is known as the "padding" technique.  The tag has a width of 100%, and then has it's padding-top CSS
+            property also set to a percentage.  The percentage value for padding-top, is calculated via the aspect ratio provied in the data-iabc-aspect attribute.
+
+            The algorithm for this is as follows:
+
+                1.) Given an aspect ratio value, formatted as [width]x[height]
+                    a.) Convert the [width] part of the string into a base 10 integer
+                    b.) Convert the [height] part of the string into a base 10 integer
+
+                2.) Divide the [height] integer by the [width] integer from step 1. (so "16x9" becomes 9 / 16 == .5625)
+
+                3.) Multiply the resultant value by 100.
+
+                4.) On the given container HTML tag do the following:
+
+                    a.) Set the CSS width to 100%;
+                    b.) Set the CSS height to auto;
+                    c.) Set the CSS padding-top to the value from step 3 plus the "%" sign. (so .5625 from step 2 becomes 56.25%).
+                    d.) Set the CSS margin-top to the inverse value from step 3 plus the "%" sign. (so .5625 from step 2 becomes 56.25%, and so the margin-top is -56.25%
+
+            HTML tags further inside the given ad-container tag that is defined by the publisher, can then simply set their overall
+            bounding box to have a CSS width and CSS height set to values of 100%, and that box will automatically resize as needed
+            (see the example markup above).
+
+
+           Below we have some JavaScript code that sets up the above flexible ad tags using said algorithm.
+
+
+
+
+        */
+
+        (function() {
+
+            var oFlexibleAdContainers   = document.querySelectorAll("*[data-iab-container='flex']"),
+                idx                     = 0,
+                oFlexContainer, sAspectRatio, oAspectSpit, nAspectWidthRatio, nAspectHeightRatio, sPaddingTop,
+                nMinWidth, nMaxWidth, nMaxHeight, bufferCSS;
+
+            while (oFlexContainer = oFlexibleAdContainers[idx++])
+            {
+                sAspectRatio        = oFlexContainer.getAttribute("data-iabc-aspect") || "";
+                oAspectSpit         = (sAspectRatio) ?  sAspectRatio.split(/x/i) : null;
+
+                if (oAspectSpit && oAspectSpit.length >= 2) {
+                    nAspectWidthRatio   = parseInt(oAspectSpit[0], 10);
+                    nAspectHeightRatio  = parseInt(oAspectSpit[1], 10);
+
+                    if (nAspectWidthRatio >= 1 && nAspectHeightRatio >= 1) {
+                        sPaddingTop     = (nAspectHeightRatio / nAspectWidthRatio) * 100;
+                        if (sPaddingTop > 0 && sPaddingTop < 100) {
+                            sPaddingTop = sPaddingTop + "%";
+                        }
+                    }
+                }
+
+                nMinWidth   = parseInt(oFlexContainer.getAttribute("data-iabc-minw"), 10);
+                nMinWidth   = (isNaN(nMinWidth) || nMinWidth < 0) ? 0 : nMinWidth;
+                nMaxWidth   = parseInt(oFlexContainer.getAttribute("data-iabc-maxw"), 10);
+                nMaxWidth   = (isNaN(nMaxWidth) || nMaxWidth < 0) ? 1920 /* 1920x1080 default size assumed */ : nMaxHeight;
+                nMaxHeight  = parseInt(oFlexContainer.getAttribute("data-iabc-maxh"), 10);
+                nMaxHeight  = (isNaN(nMaxHeight) || nMaxHeight < 0) ? 1080 /* 1920x1080 default size assumed */ : nMaxHeight;
+
+                if (sPaddingTop) {
+                    bufferCSS   =
+                    [
+                        "width:100%;height:auto;padding-top:", sPaddingTop, ";margin-top:-", sPaddingTop, ";min-width:", nMinWidth, "px;max-width:", nMaxWidth,
+                        "px;max-height:", nMaxHeight, "px;"
+                    ].join("");
+                } else {
+                    bufferCSS   =
+                    [
+                        "width:100%;height:100%;min-width:", nMinWidth, "px;max-width:", nMaxWidth,
+                        "px;max-height:", nMaxHeight, "px;"
+                    ].join("");
+                }
+
+                oFlexContainer.style.cssText    = bufferCSS;
+            }
+
+        })();
+
+    </script>
+</body>
+</html>
+
+
